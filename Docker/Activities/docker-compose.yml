@@ -1,11 +1,42 @@
 services:
-    redis-server:
-        image: docker.io/redis
-        volumes:
-            - ./redis:/data
-        command: ["redis-server", "--save", "1 1", "--protected-mode", "no"]
-    node-app:
-        build: ./
-        image: docker.io/harshita402/visits
+#postgree database
+    postgres:
+        image: postgres
+        environment:
+            - POSTGRES_PASSWORD=postgres_password
+#redis database
+    redis:
+        image: redis
+        command: ["redis-server", "--protected-mode", "no"]
+#Express api server
+    api:
+        build: ./server
+        image: docker.io/harshita402/complex-api
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - PGUSER=postgres
+            - PGHOST=postgres
+            - PGDATABASE=postgres
+            - PGPASSWORD=postgres_password
+            - PGPORT=5432
+#React client
+    client:
+        build: ./client
+        image: docker.io/harshita402/complex-client
+#worker service
+    worker:
+        build: ./worker
+        image: docker.io/harshita402/complex-worker
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+#nginx service
+    nginx:
+        depends_on:
+            - api
+            - client
+        restart: always
+        build: ./nginx
         ports:
-            - "8081:8081"
+            - "8082:80"

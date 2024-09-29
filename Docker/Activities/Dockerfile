@@ -1,18 +1,6 @@
-# Base Image
 FROM docker.io/node:18-alpine
-
-# Switch Working Dir to '/usr/app'
 WORKDIR /usr/app
-
-# Copy over the package.json into
-# the container
-COPY package.json .
-
-# Install the deps
+COPY ./package.json ./
 RUN npm install
-
-# Copy the rest of the files over
 COPY . .
-
-# Start the App
-CMD ["npm", "start"]
+CMD ["npm", "run", "start"]
