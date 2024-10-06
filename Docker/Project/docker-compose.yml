@@ -1,0 +1,21 @@
+services:
+#postgree database
+    postgres:
+        image: postgres
+        environment:
+            - POSTGRES_PASSWORD=postgres_password                 
+            - POSTGRES_DB=simple_blog_api 
+#Express api server 
+    api:
+        build:
+            context: ./ #Relative path to Dockerfile
+            dockerfile: Dockerfile #Name of the docker file
+        image: docker.io/harshita402/simple_blog_api
+        environment:
+            - POSTGRES_HOST=postgres
+            - POSTGRES_PORT=5432
+            - POSTGRES_USERNAME=postgres
+            - POSTGRES_PASSWORD=postgres_password
+            - POSTGRES_DB=simple_blog_api
+        ports:
+            - "3000:3000"
