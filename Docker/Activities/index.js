@@ -1,11 +1,27 @@
-const express = require('express');
-    
-const app = express(); 
-    
-app.get('/', (req, res) => {
-    res.send('Hi there!');
-}); 
+const express = require("express");
+const redis = require("redis");
 
-app.listen(8080, () => {
-    console.log("Listening on port 8080");
+const app = express();
+const client = redis.createClient({
+    host: "redis-server",
+    port:6379
+});
+
+client.get("visits", (err, visits) => {
+  if (visits === null) {
+    client.set("visits", 0);
+  } else {
+    client.set("visits", parseInt(visits));
+  }
+});
+
+app.get("/", (req, res) => {
+  client.get("visits", (err, visits) => {
+    res.send("Number of visits is " + visits);
+    client.set("visits", parseInt(visits) + 1);
+  });
+});
+
+app.listen(8081, () => {
+  console.log("Listening on port 8081");
 });
